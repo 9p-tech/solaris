@@ -1,0 +1,391 @@
+login.html
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solarix - Login</title>
+    <style>
+        /* RESET & BASE */
+        * {
+            box-sizing: border-box;
+            font-family: "Inter", system-ui, sans-serif;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        .page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* CONTAINER */
+        .container {
+            width: 100%;
+            max-width: 460px;
+            padding: 24px;
+        }
+
+        /* HEADER / LOGO */
+        header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .logo-badge {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            color: #fff;
+        }
+
+        header p {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #d1d5db;
+            opacity: 0.9;
+        }
+
+        /* CARD */
+        .card {
+            background: white;
+            border-radius: 22px;
+            padding: 32px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.35);
+        }
+
+        /* TABS */
+        .tab-container {
+            background: #f3f4f6;
+            padding: 6px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            background: white;
+            color: #047857;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+        }
+
+        /* FORM */
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .field label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .form-row a {
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        /* BUTTON */
+        .primary-btn {
+            margin-top: 8px;
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .primary-btn a {
+            text-decoration: none;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        /* DIVIDER */
+        .divider {
+            text-align: center;
+            margin: 28px 0 20px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* SOCIAL */
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .social-btn {
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .social-btn:hover {
+            background: #f3f4f6;
+        }
+
+        /* FEATURES */
+        .features {
+            margin-top: 28px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            text-align: center;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 12px;
+            border-radius: 14px;
+            color: #e5e7eb;
+            font-size: 13px;
+            transition: transform 0.25s;
+        }
+
+        .feature:hover {
+            transform: translateY(-4px);
+        }
+
+        /* FOOTER */
+        .footer {
+            margin-top: 22px;
+            text-align: center;
+            font-size: 12px;
+            color: #cbd5f5;
+        }
+
+        .goToSignUp {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 14px;
+            color: #2563eb;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .goToSignUp a {
+            text-decoration: none;
+            color: #2563eb;
+        }
+    </style>
+</head>
+
+<body class="page">
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification hidden fade-in">
+        <span id="notificationText"></span>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo-badge">⚡</div>
+            <h1>Solarix</h1>
+            <p>Blockchain-Based P2P Renewable Energy Marketplace</p>
+        </header>
+
+
+        <!-- Card -->
+        <div class="card">
+
+            <!-- Toggle -->
+            <div class="tab-container">
+                <button id="loginTab" class="tab active">Login</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="form">
+
+                <div class="field">
+                    <label>Email</label>
+                    <div class="input-wrapper">
+                        <!-- svg -->
+                        <input type="email" id="loginEmail" placeholder="you@example.com">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <!-- svg -->
+                        <input type="password" id="loginPassword" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label class="checkbox">
+                        <input type="checkbox">
+                        Remember me
+                    </label>
+                    <a href="#" class="link">Forgot password?</a>
+                </div>
+
+                <button id="signupBtn" class="primary-btn">
+                    Login to Dashboard →
+                </button>
+
+                <div class="goToSignUp">
+                    <a href="part2.html">Create an account</a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon"></div>
+                <p>Blockchain Secured</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"></div>
+                <p>Instant Trading</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"></div>
+                <p>100% Renewable</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            ©️ 2025 Solarix. Powering the future with blockchain.
+        </div>
+
+    </div>
+    </div>
+</body>
+<script>
+   
+    const signupBtn = document.getElementById("signupBtn");
+
+    signupBtn.addEventListener("click", async () => {
+        const email = document.getElementById("loginEmail").value;
+        const password = document.getElementById("loginPassword").value;
+
+        // 1. Basic Frontend Validation
+        if (!email || !password) {
+            alert("Please fill all fields");
+            return;
+        }
+        else if (email.indexOf('@') === -1) {
+            alert("Please enter a valid email");
+            return;
+        }
+
+        // 2. UI Feedback: Disable button while waiting for server
+        signupBtn.disabled = true;
+        const originalText = signupBtn.innerText;
+        signupBtn.innerText = "Verifying...";
+
+        try {
+            // 3. Request to Flask Backend
+            const response = await fetch("http://127.0.0.1:5000/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // ✅ Success: Redirect to Dashboard
+                window.location.href = "psrt3.html";
+            } else {
+                // ❌ Failure: Alert the error (e.g., "Invalid credentials")
+                alert(result.error || "Login failed");
+                resetButton(originalText);
+            }
+        } catch (error) {
+            // ❌ Connection Error: Backend is likely not running
+            console.error("Error:", error);
+            alert("Cannot connect to server. Ensure Flask is running on port 5000.");
+            resetButton(originalText);
+        }
+    });
+
+    // Helper to restore button state
+    function resetButton(text) {
+        signupBtn.disabled = false;
+        signupBtn.innerText = text;
+    }
+
+
+
+</script>
+</body>
+
+</html>

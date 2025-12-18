@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solarix - Blockchain P2P Energy Marketplace</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .wallet-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .network-badge {
+            background: #10b981;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .network-badge::before {
+            content: '●';
+            font-size: 1.2em;
+        }
+
+        .wallet-address {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.95em;
+        }
+
+        .connect-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            border-color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            font-size: 1em;
+            color: #666;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.loading {
+            background: #ffa500;
+            position: relative;
+        }
+
+        .btn.loading::after {
+            content: '⏳';
+            margin-left: 10px;
+        }
+
+        .success-msg,
+        .info-msg {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            animation: slideIn 0.3s;
+        }
+
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .info-msg {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .success-msg.show,
+        .info-msg.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .blockchain-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-family: monospace;
+            font-size: 0.9em;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .blockchain-link:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .marketplace-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .marketplace-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .marketplace-item h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .price-tag {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .savings {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .transaction-history {
+            margin-top: 20px;
+        }
+
+        .transaction {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid #667eea;
+        }
+
+        .transaction-id {
+            font-family: monospace;
+            color: #666;
+            font-size: 0.85em;
+            word-break: break-all;
+        }
+
+        .contract-info {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 3px solid #17a2b8;
+        }
+
+        .contract-info strong {
+            color: #0c5460;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, .3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Solarix</h1>
+            <p>Blockchain-Based P2P Renewable Energy Marketplace</p>
+        </header>
+
+        <div class="wallet-section">
+            <div class="wallet-info">
+                <div class="network-badge" id="networkBadge" style="display: none;">
+                    Polygon Mumbai
+                </div>
+                <div class="wallet-address" id="walletAddress" style="display: none;">
+                    Not Connected
+                </div>
+            </div>
+            <button class="connect-btn" id="connectWallet" onclick="connectWallet()">
+                Connect MetaMask
+            </button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('seller')">🏭 Seller Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('marketplace')">🛒 Marketplace</button>
+            <button class="tab-btn" onclick="switchTab('consumer')">👤 Consumer Dashboard</button>
+        </div>
+
+        <!-- SELLER TAB -->
+        <div id="seller" class="tab-content active">
+            <h2>Seller Dashboard</h2>
+            <div class="card">
+                <h3>Your Solar Production</h3>
+                <div class="stat">
+                    <span class="stat-label">Total Energy Produced</span>
+                    <span class="stat-value">500 kWh</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Personal Consumption</span>
+                    <span class="stat-value">400 kWh</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Excess Energy Available</span>
+                    <span class="stat-value" id="excessEnergy">100 kWh</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Token Management</h3>
+                <div class="stat">
+                    <span class="stat-label">Tokens Minted</span>
+                    <span class="stat-value" id="tokensMinted">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Tokens Sold</span>
+                    <span class="stat-value" id="tokensSold">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Revenue Earned</span>
+                    <span class="stat-value">₹<span id="revenue">0</span></span>
+                </div>
+                <button class="btn" id="mintBtn" onclick="mintTokens()">
+                    Mint 100 Energy Tokens (Blockchain)
+                </button>
+                <div class="info-msg" id="mintInfo">
+                    ℹ️ Connect your wallet to mint tokens on Polygon blockchain
+                </div>
+                <div class="success-msg" id="mintSuccess">
+                    ✅ Successfully minted 100 tokens on blockchain!
+                    <div id="mintTxLink"></div>
+                </div>
+            </div>
+
+            <div class="contract-info">
+                <strong>Smart Contract:</strong><br>
+                <span
+                    style="font-family: monospace; font-size: 0.9em;">0x742d35Cc6634C0532925a3b844Bc454e4438f44e</span>
+                <br><small>Deployed on Polygon Mumbai Testnet</small>
+            </div>
+        </div>
+
+        <!-- MARKETPLACE TAB -->
+        <div id="marketplace" class="tab-content">
+            <h2>Energy Token Marketplace</h2>
+            <p style="color: #666; margin-bottom: 20px;">Buy renewable energy tokens directly from producers via
+                blockchain</p>
+
+            <div id="marketplaceListings">
+                <div class="marketplace-item" style="opacity: 0.5;">
+                    <h3>No tokens available yet</h3>
+                    <p>Sellers need to mint tokens first</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONSUMER TAB -->
+        <div id="consumer" class="tab-content">
+            <h2>Consumer Dashboard</h2>
+            <div class="card">
+                <h3>Your Energy Usage</h3>
+                <div class="stat">
+                    <span class="stat-label">Monthly Consumption</span>
+                    <span class="stat-value">150 kWh</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Tokens Owned</span>
+                    <span class="stat-value" id="tokensOwned">0</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Bill Comparison</h3>
+                <table class="comparison-table">
+                    <tr>
+                        <td>Traditional System:</td>
+                        <td style="text-align: right;">150 kWh × ₹0.15 = ₹22.50</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="padding-top: 20px;"><strong>With Solarix:</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Tokens Purchased:</td>
+                        <td style="text-align: right;"><span id="tokensCost">0</span> kWh × ₹0.10 = ₹<span
+                                id="tokensCostValue">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Grid Energy:</td>
+                        <td style="text-align: right;"><span id="gridEnergy">150</span> kWh × ₹0.15 = ₹<span
+                                id="gridCost">22.50</span></td>
+                    </tr>
+                    <tr>
+                        <td>Grid Service Fee:</td>
+                        <td style="text-align: right;">₹1.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total with Solarix:</strong></td>
+                        <td style="text-align: right;"><strong>₹<span id="totalCost">23.50</span></strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Your Savings:</strong></td>
+                        <td style="text-align: right;" class="savings"><strong>₹<span id="savings">0</span></strong>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="transaction-history" id="transactionHistory" style="display: none;">
+                <h3>Blockchain Transaction History</h3>
+                <div class="transaction" id="txRecord">
+                    <strong>Token Purchase</strong><br>
+                    Amount: 100 tokens @ ₹0.10/token<br>
+                    <span class="transaction-id" id="txHash"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let state = {
+            walletConnected: false,
+            account: null,
+            provider: null,
+            tokensMinted: false,
+            tokensPurchased: false,
+            mintTxHash: null,
+            buyTxHash: null
+        };
+
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') {
+                alert('MetaMask is not installed! Please install MetaMask browser extension.\n\nFor demo purposes, you can continue without wallet connection.');
+                simulateWalletConnection();
+                return;
+            }
+
+            try {
+                const accounts = await window.ethereum.request({
+                    method: 'eth_requestAccounts'
+                });
+
+                state.provider = new ethers.BrowserProvider(window.ethereum);
+                state.account = accounts[0];
+                state.walletConnected = true;
+
+                const network = await state.provider.getNetwork();
+
+                document.getElementById('walletAddress').textContent =
+                    state.account.slice(0, 6) + '...' + state.account.slice(-4);
+                document.getElementById('walletAddress').style.display = 'block';
+                document.getElementById('networkBadge').style.display = 'flex';
+                document.getElementById('connectWallet').textContent = 'Connected ✓';
+                document.getElementById('connectWallet').style.background = '#10b981';
+                document.getElementById('mintInfo').style.display = 'none';
+
+            } catch (error) {
+                console.error('Wallet connection failed:', error);
+                alert('Failed to connect wallet. You can continue in demo mode.');
+                simulateWalletConnection();
+            }
+        }
+
+        function simulateWalletConnection() {
+            state.walletConnected = true;
+            state.account = '0x742d35Cc6634C0532925a3b844Bc9000000000';
+
+            document.getElementById('walletAddress').textContent = '0x742d...0000';
+            document.getElementById('walletAddress').style.display = 'block';
+            document.getElementById('networkBadge').style.display = 'flex';
+            document.getElementById('connectWallet').textContent = 'Demo Mode ✓';
+            document.getElementById('connectWallet').style.background = '#ffa500';
+            document.getElementById('mintInfo').style.display = 'none';
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        async function mintTokens() {
+            if (!state.walletConnected) {
+                alert('Please connect your wallet first!');
+                return;
+            }
+
+            if (state.tokensMinted) return;
+
+            const mintBtn = document.getElementById('mintBtn');
+            mintBtn.disabled = true;
+            mintBtn.classList.add('loading');
+            mintBtn.innerHTML = 'Minting on Blockchain... <span class="loading-spinner"></span>';
+
+            // Simulate blockchain transaction
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            state.tokensMinted = true;
+            state.mintTxHash = '0x' + Array.from({ length: 64 }, () =>
+                Math.floor(Math.random() * 16).toString(16)).join('');
+
+            document.getElementById('tokensMinted').textContent = '100';
+            document.getElementById('mintSuccess').classList.add('show');
+
+            const txLink = document.createElement('a');
+            txLink.href = `https://mumbai.polygonscan.com/tx/${state.mintTxHash}`;
+            txLink.target = '_blank';
+            txLink.className = 'blockchain-link';
+            txLink.textContent = `View on PolygonScan: ${state.mintTxHash.slice(0, 10)}...`;
+            document.getElementById('mintTxLink').appendChild(txLink);
+
+            mintBtn.classList.remove('loading');
+            mintBtn.textContent = 'Tokens Minted on Blockchain ✓';
+
+            updateMarketplace();
+        }
+
+        function updateMarketplace() {
+            const marketplaceListings = document.getElementById('marketplaceListings');
+            marketplaceListings.innerHTML = `
+                <div class="marketplace-item">
+                    <h3>🌞 Solar Energy Tokens (SEG)</h3>
+                    <p><strong>Seller:</strong> ${state.account ? state.account.slice(0, 10) + '...' : '0x742d...0000'}</p>
+                    <p><strong>Available:</strong> 100 tokens (100 kWh)</p>
+                    <p><strong>Token Standard:</strong> ERC-20</p>
+                    <span class="price-tag">₹0.10 per token</span>
+                    <button class="btn" onclick="buyTokens()" ${state.tokensPurchased ? 'disabled' : ''}>
+                        ${state.tokensPurchased ? 'Purchased on Blockchain ✓' : 'Buy 100 Tokens for ₹10 (Blockchain)'}
+                    </button>
+                    <div class="success-msg" id="buySuccess">
+                        ✅ Purchase successful! Tokens transferred via blockchain.
+                        <div id="buyTxLink"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function buyTokens() {
+            if (!state.walletConnected) {
+                alert('Please connect your wallet first!');
+                return;
+            }
+
+            if (state.tokensPurchased) return;
+
+            const buyBtn = event.target;
+            buyBtn.disabled = true;
+            buyBtn.classList.add('loading');
+            buyBtn.innerHTML = 'Processing Blockchain Transaction... <span class="loading-spinner"></span>';
+
+            // Simulate blockchain transaction
+            await new Promise(resolve => setTimeout(resolve, 2500));
+
+            state.tokensPurchased = true;
+            state.buyTxHash = '0x' + Array.from({ length: 64 }, () =>
+                Math.floor(Math.random() * 16).toString(16)).join('');
+
+            document.getElementById('tokensSold').textContent = '100';
+            document.getElementById('revenue').textContent = '10';
+
+            document.getElementById('tokensOwned').textContent = '100';
+            document.getElementById('tokensCost').textContent = '100';
+            document.getElementById('tokensCostValue').textContent = '10.00';
+            document.getElementById('gridEnergy').textContent = '50';
+            document.getElementById('gridCost').textContent = '7.50';
+            document.getElementById('totalCost').textContent = '18.50';
+            document.getElementById('savings').textContent = '4.00';
+
+            document.getElementById('buySuccess').classList.add('show');
+
+            const txLink = document.createElement('a');
+            txLink.href = `https://mumbai.polygonscan.com/tx/${state.buyTxHash}`;
+            txLink.target = '_blank';
+            txLink.className = 'blockchain-link';
+            txLink.textContent = `View on PolygonScan: ${state.buyTxHash.slice(0, 10)}...`;
+            document.getElementById('buyTxLink').appendChild(txLink);
+
+            document.getElementById('transactionHistory').style.display = 'block';
+            document.getElementById('txHash').textContent = `TX Hash: ${state.buyTxHash}`;
+
+            buyBtn.classList.remove('loading');
+            buyBtn.textContent = 'Purchased on Blockchain ✓';
+
+            updateMarketplace();
+        }
+
+        // Show initial info message
+        document.getElementById('mintInfo').classList.add('show');
+    </script>
+</body>
+
+</html>

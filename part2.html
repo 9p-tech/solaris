@@ -1,0 +1,308 @@
+signup.html
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Solarix | Sign Up</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Inter", system-ui, sans-serif;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        .page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 24px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .logo-badge {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 34px;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            color: #fff;
+        }
+
+        header p {
+            font-size: 14px;
+            color: #d1d5db;
+            margin-top: 6px;
+        }
+
+        .card {
+            background: white;
+            padding: 32px;
+            border-radius: 22px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.35);
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+        }
+
+        .primary-btn {
+            margin-top: 10px;
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .secondary-btn {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .secondary-btn a {
+            text-decoration: none;
+            color: #374151;
+        }
+
+        .secondary-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #cbd5f5;
+        }
+
+        .loader {
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .success-box {
+            margin-top: 16px;
+            padding: 14px;
+            border-radius: 12px;
+            background: #ecfdf5;
+            color: #065f46;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+
+        .redirect-btn {
+            margin-top: 12px;
+            padding: 12px;
+            width: 100%;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: none;
+        }
+
+        .redirect-btn a {
+            text-decoration: none;
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="page">
+    <div class="container">
+
+        <header>
+            <div class="logo-badge">⚡</div>
+            <h1>Solarix</h1>
+            <p>Create your account</p>
+        </header>
+
+        <div class="card">
+            <div class="form">
+                <div>
+                    <label>Name</label>
+                    <input type="text" id="name" placeholder="Your name">
+                </div>
+
+                <div>
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="you@example.com">
+                </div>
+
+                <div>
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="••••••••">
+                </div>
+
+                <button id="signupBtn" class="primary-btn">
+                    <span id="btnText">Create Account →</span>
+                    <div id="loader" class="loader" style="display:none;"></div>
+                </button>
+
+                <div id="successBox" class="success-box">
+                    ✅ Account created successfully!
+                </div>
+
+                <button id="redirectBtn" class="redirect-btn">
+                    <a href="part1.html">Redirect to Login Page</a>
+                </button>
+
+
+                <button id="loginRedirect" class="secondary-btn">
+                    <a href="part1.html">Already have an account? Login</a>
+                </button>
+            </div>
+        </div>
+
+        <div class="footer">
+            ©️ 2025 Solarix. Powering the future with blockchain.
+        </div>
+
+    </div>
+
+
+</body>
+<script>
+    const signupBtn = document.getElementById("signupBtn");
+    const btnText = document.getElementById("btnText");
+    const loader = document.getElementById("loader");
+    const successBox = document.getElementById("successBox");
+
+    signupBtn.addEventListener("click", async () => {
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        if (!name || !email || !password) {
+            alert("Please fill all fields");
+            return;
+        }
+        else if (email.indexOf('@') === -1) {
+            alert("Please enter a valid email");
+            return;
+        }
+
+        // Show loader
+        btnText.style.display = "none";
+        loader.style.display = "block";
+        signupBtn.disabled = true;
+
+        // --- START OF BACKEND CONNECTION ---
+        try {
+            const response = await fetch("http://127.0.0.1:5000/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // ✅ Success
+                loader.style.display = "none";
+                successBox.style.display = "block";
+                // Check if redirectBtn exists in your HTML before calling it
+                if(typeof redirectBtn !== 'undefined') redirectBtn.style.display = "block";
+            } else {
+                // ❌ Backend Error (e.g., User already exists)
+                alert(result.error || "Signup failed");
+                resetButton();
+            }
+        } catch (error) {
+            // ❌ Network Error
+            console.error("Error:", error);
+            alert("Could not connect to the server. Is Flask running?");
+            resetButton();
+        }
+        // --- END OF BACKEND CONNECTION ---
+    });
+
+    // Helper function to reset the button state if signup fails
+    function resetButton() {
+        loader.style.display = "none";
+        btnText.style.display = "block";
+        signupBtn.disabled = false;
+    }
+
+</script>
+
+</html>
