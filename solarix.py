@@ -1,18 +1,22 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
-import sqlite3
+import libsql_experimental as libsql
 
 app = Flask(__name__)
 CORS(app)
 bcrypt = Bcrypt(app)
 
-DB = "users.db"
+
+TURSO_DATABASE_URL = "libsql://pranav-9p-tech.aws-ap-south-1.turso.io"
+TURSO_AUTH_TOKEN = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3NjYwOTc5ODcsImlkIjoiYmYxYzY5NWMtN2Y2Mi00N2ZjLWFiMTMtMDFlOTE5ZGQ4MzczIiwicmlkIjoiOTQ5OTYyMTktNWJjYS00YzY1LWE1YTUtNzIyOWEyMzk5N2QyIn0.oaEiClVNqJbyNYKhStkw30KMUUIiuUOhxu9w-qaMYmYp7xCukIjvYOkN5GydwPXX99cCrT5XsBZ_rN7GIVdWCw"
 
 
 def get_db():
-    conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
+    conn = libsql.connect(
+        database=TURSO_DATABASE_URL,
+        auth_token=TURSO_AUTH_TOKEN
+    )
     return conn
 
 
@@ -53,9 +57,11 @@ def signup():
         conn.commit()
         conn.close()
         return jsonify({"message": "Signup successful"}), 201
-
-    except sqlite3.IntegrityError:
-        return jsonify({"error": "User already exists"}), 409
+    except Exception as e:
+        error_message = str(e)
+        if "UNIQUE constraint failed" in error_message or "unique" in error_message.lower():
+            return jsonify({"error": "User already exists"}), 409
+        return jsonify({"error": f"Signup failed: {error_message}"}), 500
 
 
 # ---------------- LOGIN ----------------
@@ -66,13 +72,14 @@ def login():
     password = data.get("password")
 
     conn = get_db()
-    user = conn.execute(
+    cursor = conn.execute(
         "SELECT * FROM users WHERE email = ?",
         (email,)
-    ).fetchone()
+    )
+    user = cursor.fetchone()
     conn.close()
 
-    if user and bcrypt.check_password_hash(user["password"], password):
+    if user and bcrypt.check_password_hash(user[2], password):  # user[2] is the password column
         return jsonify({"message": "Login successful"}), 200
 
     return jsonify({"error": "Invalid credentials"}), 401
